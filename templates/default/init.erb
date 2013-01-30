@@ -8,6 +8,7 @@
 HELLO_HOME=/usr/local/tk-demo
 PIDFILE='/var/run/hello_world.pid'
 CHECK_PID_RUNNING=$(ps -ef | grep ruby | grep rackup | grep -v grep | awk '{print $2 }')
+source /etc/profile.d/rvm.sh
 
 start()
 {
