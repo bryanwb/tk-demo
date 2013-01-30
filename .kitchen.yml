@@ -7,8 +7,10 @@ platforms:
     box_url: https://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.3.box
     network:
       hostonly: '33.33.33.20'
+    customize:
+      memory: 256
   run_list:
-  - recipe[yum::epel]
+  - recipe[yumrepo::epel]
 - name: load-balancer
   driver_config:
     box: opscode-centos-6.3
@@ -16,8 +18,10 @@ platforms:
     forward_port: [80, 8080]
     network:
       hostonly: '33.33.33.21'
+    customize:
+      memory: 256
   run_list:
-  - recipe[yum::epel]
+  - recipe[yumrepo::epel]
 suites:
 - name: app-server
   run_list: [ "recipe[tk-demo]" ]
