@@ -1,0 +1,114 @@
+#!/usr/bin/env bash                                                                                                                         
+#                                                                                                                                           
+# hello_world                                                                                                                               
+#                                                                                                                                           
+# chkconfig: 2345 80 81                                                                                                                     # description: hello_world                                                                                                                  
+# process_name: hello_world                                                                                                                 
+
+HELLO_HOME=/usr/local/tk-demo
+PIDFILE='/var/run/hello_world.pid'
+CHECK_PID_RUNNING=$(ps -ef | grep ruby | grep rackup | grep -v grep | awk '{print $2 }')
+
+start()
+{
+
+if [ -f $PIDFILE ]; then
+   echo -e "\033[31;1mPID file found in $PIDFILE,Hello_World is already running?\033[0m"
+   pid_running=$(ps -ef | grep ruby | grep hello_world.rb | awk '{print $2 }')
+
+ if [ ! -z "$pid_running" ] ; then
+  echo -e "\033[31;1m Hello_World is already (Pid : $pid_running ). Doing nothing\033[0m"
+  return 1
+ fi
+else
+  echo -e "\033[1mHello_World is not running, proceeding normally\033[0m"
+  echo -e "\033[1mStarting Hello_World...\033[0m"
+fi
+
+pushd $HELLO_HOME > /dev/null  2>&1
+rackup -p 4627 > /dev/null  2>&1   &
+ps -ef | grep ruby | grep hello_world.rb | grep -v grep | awk '{print $2 }' > $PIDFILE
+popd > /dev/null  2>&1
+
+return $?
+}
+
+
+stop()
+{
+
+if [ -f "$PIDFILE" ]; then
+   echo -e "\033[31;1mPID file found, stopping Hello_World...\033[0m"
+
+ if [ ! "$CHECK_PID_RUNNING" ]; then
+    echo -e "\033[31;1mPID file found but no matching process running.. \033[0m"
+    echo -e "\033[32;1mRemove PID file.. \033[0m"
+    rm $PIDFILE
+   exit 0
+fi
+ echo -e "\033[31;1mStopping Hello_World...\033[0m"
+ kill -9 $CHECK_PID_RUNNING  && rm $PIDFILE
+fi
+
+
+if [[ ! -f "$PIDFILE"  && ! "$CHECK_PID_RUNNING"  ]]; then
+echo -e "\033[31;1mHello_World is stopped...\033[0m"
+fi
+
+
+}
+
+restart()
+{
+stop
+start
+}
+
+
+status()
+{
+
+if [[ ! -z $CHECK_PID_RUNNING  && -f $PIDFILE ]]; then
+echo -e "\033[36;1mHello_World is running  (Pid : $CHECK_PID_RUNNING )\033[0m"
+exit 0
+
+elif [[  -z $CHECK_PID_RUNNING  && ! -f $PIDFILE ]];then
+
+echo -e "\033[31;1mHello_World is not running \033[0m"
+exit 1
+
+elif [[  -z $CHECK_PID_RUNNING  &&  -f $PIDFILE ]];then
+
+echo -e "\033[31;1mHello_World is not running... found PID file.. \033[0m"
+echo -e "\033[31;1mDeleting PID file.. \033[0m"
+rm $PIDFILE
+exit 1
+fi
+
+
+
+}
+
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        restart
+        ;;
+  status)
+        status $2
+        RETVAL=$?
+     ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|status [-v]|}"
+        exit 1
+esac
+
+exit $?
+
+
