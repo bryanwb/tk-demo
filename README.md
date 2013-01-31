@@ -11,8 +11,8 @@ This demo spins up 3 nodes, an apache web server, a haproxy load
 balancer, and a application server built on sinatra. The initial HTTP
 request should traverse all 3 nodes and return the content "Hello World".
 
-   GET /             -> apache -> haproxy -> app_server  
-   "Hello World"     <-        <-         <-
+    GET /             -> apache -> haproxy -> app_server  
+    "Hello World"     <-        <-         <-
 
 Prerequisites
 =============
