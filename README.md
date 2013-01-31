@@ -5,7 +5,7 @@ This is a demo project to show how to use [test-kitchen](https://github.com/opsc
 multi-node integration tests. _Warning_, test-kitchen is still under
 heavy development. The purpose of this demo is not to serve as a
 canonical tutorial on test-kitchen but rather demonstrate the
-fundamental concepts behind its operation.
+fundamental concepts behind its operation. 
 
 This demo spins up 3 nodes, an apache web server, a haproxy load
 balancer, and a application server built on sinatra. The initial HTTP
@@ -43,14 +43,14 @@ To spin up all 3 nodes and then run the RSpec tests to test the final state
 
 ```Shell
   $ bundle exec rake test
-  # spins up 3 nodes, converges them, then executes 
+  # spins up 3 nodes, converges them, then executes rspec tests
 ```
 
 To destroy everything
 
 ```Shell
   $ bundle exec rake destroy
-  # spins up 3 nodes, converges them, then executes 
+  # destroys all 3 virtualbox vms
 ```
 
 *Note:* I experienced some very strange issues with VirtualBox
