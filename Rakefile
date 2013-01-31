@@ -30,4 +30,5 @@ end
 RSpec::Core::RakeTask.new(:spec)  do |t|
   t.pattern = "test/smoke/*_spec.rb"
 end
-  
+
+task :test => [:create, :converge, :spec] 
