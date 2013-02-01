@@ -5,7 +5,7 @@ driver_config:
   box_url: https://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.3.box
 platforms:
 - name: app-server
-  run_list: [ "recipe[yumrepo::epel]" ]
+  run_list: [ "recipe[yumrepo::epel]", "recipe[tk-demo]" ]
   driver_config:
     network: { hostonly: '33.33.33.20' }
 - name: load-balancer
