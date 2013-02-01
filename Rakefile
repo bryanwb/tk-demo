@@ -5,7 +5,7 @@ require 'kitchen'
 
 @instances = []
 @config = Kitchen::Config.new('.kitchen.yml')
-@names = %w{ app-server-node0 load-balancer-node1 apache-node2 }
+@names = %w{ default-app-server default-load-balancer default-apache-frontend }
 @names.each {|name| @instances << @config.instances.get(name) }
 
 # serial execution cuz virtualbox/vagrant can't parallelize this part
@@ -22,9 +22,10 @@ end
 task :converge => :create do
   futures = []
   # this happens in parallel
-  @instances.each {|i| futures << i.future.converge }
+  @instances.each {|i| i.converge }
+  # @instances.each {|i| futures << i.future.converge }
   # blocks until all nodes have converged
-  futures.each {|f| f.value }
+  #futures.each {|f| f.value }
 end
 
 RSpec::Core::RakeTask.new(:spec)  do |t|
