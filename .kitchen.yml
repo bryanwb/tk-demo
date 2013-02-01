@@ -1,50 +1,28 @@
----
+---     
 driver_plugin: vagrant
+driver_config:
+  box: opscode-centos-6.3
+  box_url: https://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.3.box
 platforms:
-- name: node0
+- name: app-server
+  run_list: [ "recipe[yumrepo::epel]" ]
   driver_config:
-    box: opscode-centos-6.3
-    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.3.box
-    network:
-      hostonly: '33.33.33.20'
-    customize:
-      memory: 512
-  run_list:
-  - recipe[yumrepo::epel]
-- name: node1
+    network: { hostonly: '33.33.33.20' }
+- name: load-balancer
+  run_list: [ "yumrepo::epel", "recipe[tk-haproxy]" ]
+  attributes:
+    tk_haproxy: { backend_ips: [ '33.33.33.20' ] }
   driver_config:
-    box: opscode-centos-6.3
-    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.3.box
     network:
       hostonly: '33.33.33.21'
-    customize:
-      memory: 256
-  run_list:
-  - recipe[yumrepo::epel]
-- name: node2
+- name: apache-frontend
+  run_list: [ "recipe[yumrepo::epel]", "recipe[tk-apache2]" ]
+  attributes:
+    tk_apache2: { load_balancers: [ '33.33.33.21' ] }
   driver_config:
-    box: opscode-centos-6.3
-    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/boxes/opscode-centos-6.3.box
     forward_port: [80, 8080]
     network:
       hostonly: '33.33.33.22'
-    customize:
-      memory: 256
-  run_list:
-  - recipe[yumrepo::epel]
 suites:
-- name: app-server
-  run_list: [ "recipe[tk-demo]" ]
-  attributes: {}
-- name: load-balancer
-  run_list: [ "recipe[tk-haproxy]" ]
-  attributes:
-    tk_haproxy:
-      backend_ips:
-      - '33.33.33.20'
-- name: apache
-  run_list: [ "recipe[tk-apache2]" ]
-  attributes:
-    tk_apache2:
-      load_balancers:
-      - '33.33.33.21'
+- name: default
+  run_list: []
