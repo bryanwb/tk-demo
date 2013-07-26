@@ -2,9 +2,12 @@ require 'rake'
 require 'rspec/core/rake_task'
 require 'kitchen'
 
-
 @instances = []
-@config = Kitchen::Config.new('.kitchen.yml')
+@config = Kitchen::Config.new(
+                              :loader     => Kitchen::Loader::YAML.new('.kitchen.yml'),
+                              :log_level  => :info,
+                              :supervised => false
+                              )
 @names = %w{ default-app-server default-load-balancer default-apache-frontend }
 @names.each {|name| @instances << @config.instances.get(name) }
 
@@ -32,4 +35,4 @@ RSpec::Core::RakeTask.new(:spec)  do |t|
   t.pattern = "test/smoke/*_spec.rb"
 end
 
-task :test => [:create, :converge, :spec] 
+task :test => [:create, :converge, :spec]
